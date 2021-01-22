@@ -42,9 +42,9 @@ export class WebSocket
 		this.logger.log(`Client disconnected: ${client.id}`);
 	}
 
-	@SubscribeMessage('*')
+	@SubscribeMessage('test')
 	default(@ConnectedSocket() client: Socket, @MessageBody() data: { action: string, data: any }) {
-
+		console.log(data)
 	}
 	//
 	// @Get()

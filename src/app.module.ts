@@ -5,7 +5,7 @@ import { WebSocket } from './socket';
 
 @Module({
   imports: [],
-  controllers: [AppController],
+  controllers: [AppController,WebSocket],
   providers: [AppService, WebSocket],
 })
 export class AppModule {}

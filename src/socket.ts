@@ -1,54 +1,34 @@
-import {
-	ConnectedSocket,
-	MessageBody,
-	OnGatewayConnection,
-	OnGatewayDisconnect,
-	OnGatewayInit,
-	SubscribeMessage,
-	WebSocketGateway,
-	WebSocketServer
-} from "@nestjs/websockets";
-import { Controller, Get, Logger } from '@nestjs/common';
-import {Server, Socket} from 'socket.io';
+import {OnGatewayInit, WebSocketGateway, WebSocketServer} from "@nestjs/websockets";
+import {Controller, Get, Logger, Param} from '@nestjs/common';
 
-interface Connection {
-	socket: Socket
-	id?: string
-}
 
-// @Controller('connections')
+@Controller('connections')
 @WebSocketGateway()
-export class WebSocket
-	implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
-	@WebSocketServer() server: Server;
-	readonly clients: Map<string, Connection> = new Map<string, Connection>();
+export class WebSocket implements OnGatewayInit {
+	static readonly clients: Map<string, any> = new Map<string, any>();
+	@WebSocketServer() server;
 	private logger: Logger = new Logger('VideoCallWebSocket');
 
 	constructor() {
 	}
 
-	afterInit(server: Server) {
+	afterInit(server) {
 		this.logger.log('Init');
+		server.on('connection', function connection(ws) {
+			const id = Math.random() + '';
+			WebSocket.clients.set(id, ws)
+			//  CAll sto notification
+			ws.on('message', function incoming(message) {
+				console.log('received: %s', message);
+			});
+
+			ws.send(id);
+		});
 	}
 
-	handleConnection(client: Socket, ...args: any[]) {
-		this.logger.log(`Client connected: ${client.id}`);
-		this.clients.set(client.id, {socket: client});
-		//TODO call endpoint
+	@Get('/:id')
+	getHello(@Param('id')id, data): string {
+		WebSocket.clients.get(id).send('PEOS')
+		return 'Hello World! ' + id + ' Clients: ' + WebSocket.clients.size;
 	}
-
-	handleDisconnect(client: Socket) {
-		this.clients.delete(client.id);
-		this.logger.log(`Client disconnected: ${client.id}`);
-	}
-
-	@SubscribeMessage('test')
-	default(@ConnectedSocket() client: Socket, @MessageBody() data: { action: string, data: any }) {
-		console.log(data)
-	}
-	//
-	// @Get()
-	// getHello(): string {
-	// 	return 'Hello World! Clients: ' + this.clients.size;
-	// }
 }

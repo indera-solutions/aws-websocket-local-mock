@@ -8,17 +8,17 @@ import {
 	WebSocketGateway,
 	WebSocketServer
 } from "@nestjs/websockets";
-import {Logger} from "@nestjs/common";
+import { Controller, Get, Logger } from '@nestjs/common';
 import {Server, Socket} from 'socket.io';
 
 interface Connection {
 	socket: Socket
-	type?: 'VET' | 'PET_OWNER' | 'TECH'
 	id?: string
 }
 
+// @Controller('connections')
 @WebSocketGateway()
-export class DobbieWebSocket
+export class WebSocket
 	implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
 	@WebSocketServer() server: Server;
 	readonly clients: Map<string, Connection> = new Map<string, Connection>();
@@ -46,4 +46,9 @@ export class DobbieWebSocket
 	default(@ConnectedSocket() client: Socket, @MessageBody() data: { action: string, data: any }) {
 
 	}
+	//
+	// @Get()
+	// getHello(): string {
+	// 	return 'Hello World! Clients: ' + this.clients.size;
+	// }
 }

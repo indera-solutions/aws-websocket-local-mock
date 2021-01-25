@@ -1,5 +1,5 @@
 import { OnGatewayInit, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
-import { Controller, Get, Logger, Param } from '@nestjs/common';
+import { Controller, Get, Logger, Param, Post } from '@nestjs/common';
 import superagent = require('superagent');
 import { EventType } from './wsMessage';
 
@@ -41,5 +41,9 @@ export class WebSocket implements OnGatewayInit {
 		return 'Hello World! ' + id + ' Clients: ' + WebSocket.clients.size;
 	}
 
+	@Post('/')
+	infoRequest(){
+
+	}
 
 }

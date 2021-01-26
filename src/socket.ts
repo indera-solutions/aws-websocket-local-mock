@@ -59,4 +59,9 @@ export class WebSocket implements OnGatewayInit {
 		WebSocket.clients.get(msg.connectionId).send(JSON.stringify(msg));
 	}
 
+	@Post('/:id')
+	sendMessage(@Param('id')id, data): void{
+		WebSocket.clients.get(id).send(data)
+	}
+
 }

@@ -21,7 +21,7 @@ export class WebSocket implements OnGatewayInit {
 		server.on('connection', async function connection(ws) {
 			const id = Math.random() + '';
 			WebSocket.clients.set(id, ws);
-			ws.send(JSON.stringify(new WsMessage(EventType.MESSAGE, id, "id")));
+			ws.send(JSON.stringify(new WsMessage(EventType.MESSAGE, id, 'id')));
 			await superagent.post(GATEWAY_HTTP_URL).send({
 				eventType: EventType.CONNECT,
 				connectionId: id,
@@ -61,8 +61,9 @@ export class WebSocket implements OnGatewayInit {
 	}
 
 	@Post('/:id')
-	sendMessage(@Param('id')id, data): void{
-		WebSocket.clients.get(id).send(data)
+	sendMessage(@Param('id')id, @Body() data): void {
+		console.log(data);
+		WebSocket.clients.get(id).send(JSON.stringify(data));
 	}
 
 }

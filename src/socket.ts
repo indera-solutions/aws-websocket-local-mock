@@ -56,6 +56,7 @@ export class WebSocket implements OnGatewayInit {
 
 	@Post('/')
 	infoRequest(@Body() msg: WsMessage) {
+		console.log(msg);
 		WebSocket.clients.get(msg.connectionId).send(JSON.stringify(msg));
 	}
 

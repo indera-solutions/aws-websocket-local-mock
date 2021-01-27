@@ -21,28 +21,31 @@ export class WebSocket implements OnGatewayInit {
 		server.on('connection', async function connection(ws) {
 			const id = Math.random() + '';
 			WebSocket.clients.set(id, ws);
-			ws.send(JSON.stringify(new WsMessage(EventType.MESSAGE, id, 'id')));
+			// ws.send(JSON.stringify(new WsMessage(EventType.MESSAGE, id, 'id')));
 			await superagent.post(GATEWAY_HTTP_URL).send({
 				eventType: EventType.CONNECT,
 				connectionId: id,
-				body: 'Hello',
+				body: { payload: 'Hello', action: 'CONNECTED' },
 			});
 			console.log(`Connected`);
 			//  CAll sto notification
 			ws.on('message', async function incoming(message) {
+				const msg = JSON.parse(message);
+				console.log(msg);
 				console.log('received: %s', message);
 				await superagent.post(GATEWAY_HTTP_URL).send({
 					eventType: EventType.MESSAGE,
 					connectionId: id,
-					body: message,
+					body: { payload: msg.payload, action: msg.action },
 				});
 			});
 
 			ws.on('close', async function disconnect() {
+				console.log(`Disconnected`);
 				await superagent.post(GATEWAY_HTTP_URL).send({
 					eventType: EventType.DISCONNECT,
 					connectionId: id,
-					body: 'Goodbye',
+					body: { payload: 'Goodbye', action: 'DISCONNECTED' },
 				});
 			});
 		});

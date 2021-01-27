@@ -36,7 +36,7 @@ export class WebSocket implements OnGatewayInit {
 				await superagent.post(GATEWAY_HTTP_URL).send({
 					eventType: EventType.MESSAGE,
 					connectionId: id,
-					body: { payload: msg.payload, action: msg.action },
+					body: message,
 				});
 			});
 
